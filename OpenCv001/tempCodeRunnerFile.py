@@ -1,6 +1,8 @@
-import cv2 as cv
-import numpy as np
-
-img2= cv.imread("resources/logo.jpg")
-cv.imshow("sd",img2)
-cv.waitKey(0)
+ized)
+cv.imshow('2', colorized2)
+cv.imshow('3', colorized3)
+cv.imshow('4', colorized4)
+cv.imshow('5', colorized5)
+cv.imwrite("outputs/myImg.png",colorized5)
+cv.imshow('6', colorized6)
+cv.imshow('7', colorized7)
