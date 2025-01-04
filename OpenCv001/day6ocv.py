@@ -31,6 +31,11 @@ def medianBlur(frame,x):
 
 def greyimg(frame):
     return cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
+
+def BITsubtract(frame1,frame2):
+    return cv.bitwise_and(cv.bitwise_not(frame2),frame1)    # A-B= A^(B')
+
+
 # --------------
 
 #objects
@@ -42,50 +47,25 @@ img2= greyimg(rescaleFrame(cv.imread("resources/book.png"),0.5))
 img3= rescaleFrame(cv.imread("resources/Shapes.png"),0.5)
 video = cv.VideoCapture("resources/video.mp4")
 bg1=np.ones((img2.shape[0],img2.shape[1],3),np.uint8)
-bg2=np.zeros((img2.shape[0],img2.shape[1],3),np.uint8)
+bg2=np.zeros((img2.shape[0],img2.shape[1]),np.uint8)
 img4= rescaleFrame(cv.imread("resources/graySnake.png"),0.4)
 img5=rescaleFrame(cv.imread("resources/jamesClear.png"),0.5)
-img6orig=cv.imread("resources/me.png")
-img6=rescaleFrame(img6orig[600:2215,504:2000],0.2)
+img6=rescaleFrame(cv.imread("resources/me.png"),0.2)
 img7=rescaleFrame(cv.imread("resources/landscape.png"),0.5)
-cv.imshow("ls",medianBlur(img7,3))                                                          
-
+# cv.imshow("ls",bg2)                                                  
+# print(bg2.shape)q
 #  -------------------
-source=img6
-print (source.shape)
-# cv.imshow("snake",source)
-# BGRimg=cv.cvtColor(source,cv.COLOR_GRAY2BGR)
-# cv.imshow("snakeColoured",BGRimg)
-# a=250
-# bg1[:]=[a,a,a]
+source=img7
 
-# cv.imshow("background",bg1)
-colorized = cv.cvtColor(source,cv.COLOR_BGR2HSV)
-colorized2 = cv.applyColorMap(source, cv.COLORMAP_TURBO)
-colorized3= cv.applyColorMap(source, cv.COLORMAP_AUTUMN)
-colorized4 = cv.applyColorMap(source, cv.COLORMAP_BONE)
-colorized5 = cv.applyColorMap(source, cv.COLORMAP_CIVIDIS)
-colorized6 = cv.applyColorMap(source, cv.COLORMAP_COOL)
-colorized7 = cv.applyColorMap(source, cv.COLORMAP_HOT)
-colorized8=cv.applyColorMap(img5,cv.COLORMAP_CIVIDIS)
-# cv.imshow('Colorized', colorized)
-# cv.imshow('2', colorized2)
-# cv.imshow('3', colorized3)
-# cv.imshow('4', colorized4)
-# cv.imshow('5', colorized5)
-# cv.imwrite("outputs/myImg.png",colorized5)
-# cv.imshow('6', colorized6)
-# cv.imshow('7', colorized7)
-# cv.imshow('James', colorized8)
+rectangle= cv.rectangle(bg2.copy(),(100,100),(400,400),255,-1)
+circle=cv.circle(bg2.copy(),(bg2.shape[1]//2,bg2.shape[0]//2),200,255,-1)
+# cv.imshow("rectangel",rectangle)
+cv.imshow("circile",circle)
+BitwishAND= cv.bitwise_and(rectangle,circle)
+BitwiseOR=cv.bitwise_or(circle,rectangle)
+bitwiseXOR=cv.bitwise_xor(circle,rectangle)
+bitwiseNOT=cv.bitwise_not(circle)
+bitwiseSUB=BITsubtract(circle,rectangle)
+cv.imshow("BIT SUB",bitwiseSUB)
 
-b,g,r = cv.split(source)     #bgr Intensity maps
-# cv.imshow("b",b)
-# cv.imshow("g",g)
-# cv.imshow("r",r)
-
-# cv.imshow("merged",cv.merge([b,g,r]))        #merges b,g,r according to respective intensity maps
-# cv.imshow("inversemerged",cv.merge([r,g,b]))
 cv.waitKey(0)
-
-
-

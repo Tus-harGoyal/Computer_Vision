@@ -1,8 +1,3 @@
-ized)
-cv.imshow('2', colorized2)
-cv.imshow('3', colorized3)
-cv.imshow('4', colorized4)
-cv.imshow('5', colorized5)
-cv.imwrite("outputs/myImg.png",colorized5)
-cv.imshow('6', colorized6)
-cv.imshow('7', colorized7)
+
+# c1[:]=0,0,241
+# cv.imshow("blue",c1)
