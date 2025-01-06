@@ -53,44 +53,28 @@ img6=rescaleFrame(cv.imread("resources/me.png"),0.2)
 img7=rescaleFrame(cv.imread("resources/landscape.png"),0.5)                                               
 # print(bg2.shape)
 #  -------------------
-source=img5
-bg=np.zeros(source.shape[:2],dtype='uint8')                  #BG DIMENSIONS MUST BE SAME SIZE OF THE IMAGE
-blank=np.zeros((700,700,3),dtype='uint8')
-# c1=blank.copy()
-# c1[:]=0,0,223
-# cv.imshow("red",c1)
-rectangle= cv.rectangle(bg.copy(),(100,100),(300,300),255,-1)
-circle=cv.circle(bg.copy(),(bg.shape[1]//2,bg.shape[0]//2),100,255,-1)
+source=rescaleFrame(greyimg(img7),0.5)
 
-# cv.imshow("CIRCLE",circle)   
-# cv.imshow("RECTANGEL",rectangle)
+threshold,threshImg= cv.threshold(source,100,255,cv.THRESH_BINARY)
+# print(thresh)
+print (threshold)
+# cv.imshow("threshIMG",threshImg)
 
-weired_Shape= cv.bitwise_and(circle,rectangle)
-# cv.imshow("WEIRED SHAPE",weired_Shape)
+#Adaptive Threshold
+                                                                                     # (kernalSize,C_Val)
+adaptiveThreshIMG1= cv.adaptiveThreshold(source,255,cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY_INV,11,10)
+cv.imshow("ATh_IMG1",adaptiveThreshIMG1)
+adaptiveThreshIMG2= cv.adaptiveThreshold(source,255,cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY_INV,11,15)
+cv.imshow("ATh_IMG2",adaptiveThreshIMG2)
+adaptiveThreshIMG3= cv.adaptiveThreshold(source,255,cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY_INV,9,10)
+cv.imshow("ATh_IMG3",adaptiveThreshIMG3)
+adaptiveThreshIMG4= cv.adaptiveThreshold(source,255,cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY_INV,9,15)
+cv.imshow("ATh_IMG4",adaptiveThreshIMG4)
+adaptiveThreshIMG5= cv.adaptiveThreshold(source,255,cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY_INV,5,10)
+cv.imshow("ATh_IMG5",adaptiveThreshIMG5)
+adaptiveThreshIMG6= cv.adaptiveThreshold(source,255,cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY_INV,5,15)
+cv.imshow("ATh_IMG6",adaptiveThreshIMG6)
 
-maskImg= cv.bitwise_and(source,source,mask=weired_Shape)
-# cv.imshow("MASKED IMAGE",maskImg)
-
-#    HISTOGRAM
-
-source=img7
-cv.imshow("image",source)
-
-histogram1= cv.calcHist([source],[0],None,[256],[0,256])
-histogram2= cv.calcHist([source],[1],None,[256],[0,256])
-histogram3= cv.calcHist([source],[2],None,[256],[0,256])
-
-# imshow
-
-# print(histogram)
-plt.figure()
-plt.title("HISTOGRAM")
-plt.xlabel("BINS")
-plt.xlim([0,256])
-plt.ylabel( "#PIXCLE")
-plt.plot(histogram1,color = 'blue')
-plt.plot(histogram2,color = 'green')
-plt.plot(histogram3,color = 'red')
-plt.show()
+## more Kernal size makes boundaries thinnner, while more C_Val reduces point chunks and noise 
 
 cv.waitKey(0)
