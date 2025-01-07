@@ -53,7 +53,7 @@ img6=rescaleFrame(cv.imread("resources/me.png"),0.2)
 img7=rescaleFrame(cv.imread("resources/landscape.png"),0.5)                                               
 # print(bg2.shape)
 #  -------------------
-source=rescaleFrame(greyimg(img7),0.5)
+source=rescaleFrame(greyimg(img4),0.5)
 
 threshold,threshImg= cv.threshold(source,100,255,cv.THRESH_BINARY)
 # print(thresh)
@@ -75,6 +75,7 @@ cv.imshow("ATh_IMG5",adaptiveThreshIMG5)
 adaptiveThreshIMG6= cv.adaptiveThreshold(source,255,cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY_INV,5,15)
 cv.imshow("ATh_IMG6",adaptiveThreshIMG6)
 
-## more Kernal size makes boundaries thinnner, while more C_Val reduces point chunks and noise 
+## more Kernal size makes boundaries thinnner, while more C_Val reduces point chunks and noise
+
 
 cv.waitKey(0)

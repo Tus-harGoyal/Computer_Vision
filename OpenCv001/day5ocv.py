@@ -48,11 +48,11 @@ img5=rescaleFrame(cv.imread("resources/jamesClear.png"),0.5)
 img6orig=cv.imread("resources/me.png")
 img6=rescaleFrame(img6orig[600:2215,504:2000],0.2)
 img7=rescaleFrame(cv.imread("resources/landscape.png"),0.5)
-cv.imshow("ls",medianBlur(img7,3))                                                          
+# cv.imshow("ls",medianBlur(img7,3))                                                          
 
 #  -------------------
 source=img6
-print (source.shape)
+print (bg1)
 # cv.imshow("snake",source)
 # BGRimg=cv.cvtColor(source,cv.COLOR_GRAY2BGR)
 # cv.imshow("snakeColoured",BGRimg)
