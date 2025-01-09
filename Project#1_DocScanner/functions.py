@@ -38,3 +38,20 @@ def GetValTrackBars():
     Iteratn=cv.getTrackbarPos("G_Blur","cannyBars")
     src=t1,t2,Iteratn
     return src
+
+def biggest_Contour_Point(contours):
+    maxArea=0
+    biggestContour=[]
+    for i in contours:
+        area=cv.contourArea(i)   #found area of i'th contour
+        if area>10:   #filter small contours and noise
+            perimeter=cv.arcLength(i,True)   #true means closed contour
+            edges=cv.approxPolyDP(i,0.01*perimeter,True)      #0.02*peri is Deviation allowed from original contour
+            if area>maxArea and len(edges)==4:
+                biggestContour=edges
+                maxArea=area
+        else:
+            print("area greater than 10 doesnt exist")
+
+    return biggestContour
+    
