@@ -55,7 +55,7 @@ img8=cv.imread("resources/faces.png")
 img10=rescaleFrame(cv.imread("resources/groupOfPeople.png"),0.8)   
                                          
 # print(bg2.shape)
-#  -------------------
+#  ------------------
 source=greyimg(img10)
 # cv.imshow("source",source)
 ## Edge Detection 2 (its prety good!)
@@ -90,7 +90,7 @@ Sobelxy=cv.Sobel(source,cv.CV_64F,1,1)
 #Haars Cascade Face detection
 source2=img10
 haars_cascade= cv.CascadeClassifier('resources\haar_face.xml')
-face_rect= haars_cascade.detectMultiScale(source2,scaleFactor=1.2,minNeighbors=10)
+face_rect= haars_cascade.detectMultiScale(source2,scaleFactor=1.2,minNeighbors=4)
 print(f'{len(face_rect)} face(s) detected')
 for (x,y,h,k) in face_rect:
     cv.rectangle(source2,(x,y),(x+h,y+k),(255,255,0),2)
