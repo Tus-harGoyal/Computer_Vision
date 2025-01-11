@@ -1,8 +1,9 @@
 import cv2 as cv
-
+import numpy as np
 def rescale(frame,factor):
-    newDimensions=(int(frame.shape[1]*factor),int(frame.shape[0]*factor))
-    return cv.resize(frame,newDimensions)
+    blurred_image = cv.GaussianBlur(frame, (5, 5), 0)
+    newDimensions=(int(blurred_image.shape[1]*factor),int(blurred_image.shape[0]*factor))
+    return cv.resize(frame,newDimensions,interpolation=cv.INTER_CUBIC)
 
 def grayImg(frame):
     return cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
@@ -27,31 +28,27 @@ def nothing ():
 def init_Trackbar():
     cv.namedWindow("cannyBars")
     cv.resizeWindow("cannyBars",300,300)
-    cv.createTrackbar("T1","cannyBars",100,255,nothing)
-    cv.createTrackbar("T2","cannyBars",100,255,nothing)
-    cv.createTrackbar("G_Blur","cannyBars",1,15,nothing)
+    cv.createTrackbar("G_Blur","cannyBars",5,15,nothing)
     
 
 def GetValTrackBars():
-    t1=cv.getTrackbarPos("T1","cannyBars")
-    t2=cv.getTrackbarPos("T2","cannyBars")
     Iteratn=cv.getTrackbarPos("G_Blur","cannyBars")
-    src=t1,t2,Iteratn
+    src=Iteratn
     return src
 
-def biggest_Contour_Point(contours):
+def biggest_Contour_Point(contours,width,height):
     maxArea=0
-    biggestContour=[]
+    biggestContour=np.array([[0,0],[width,0],[width,height],[0,height]])
     for i in contours:
         area=cv.contourArea(i)   #found area of i'th contour
-        if area>10:   #filter small contours and noise
+        if area>50:   #filter small contours and noise
             perimeter=cv.arcLength(i,True)   #true means closed contour
-            edges=cv.approxPolyDP(i,0.01*perimeter,True)      #0.02*peri is Deviation allowed from original contour
-            if area>maxArea and len(edges)==4:
-                biggestContour=edges
+            aprox=cv.approxPolyDP(i,0.02*perimeter,True)      #0.02*peri is Deviation allowed from original contour
+            if area>maxArea and len(aprox)==4:
+                biggestContour=aprox
                 maxArea=area
         else:
-            print("area greater than 10 doesnt exist")
+            print("area greater than 50 doesnt exist")
 
     return biggestContour
     
