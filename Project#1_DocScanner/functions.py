@@ -27,28 +27,35 @@ def nothing ():
 
 def init_Trackbar():
     cv.namedWindow("cannyBars")
-    cv.resizeWindow("cannyBars",300,300)
+    cv.resizeWindow("cannyBars",500,100)
+    # cv.createTrackbar("minArea","cannyBars",50,1000,nothing)
+    cv.createTrackbar("maxArea_Scale","cannyBars",5,50,nothing)
     cv.createTrackbar("G_Blur","cannyBars",5,15,nothing)
     
 
 def GetValTrackBars():
+    # minArea=cv.getTrackbarPos("minArea","cannyBars")
+    maxArea_Scale=cv.getTrackbarPos("maxArea_Scale","cannyBars")
     Iteratn=cv.getTrackbarPos("G_Blur","cannyBars")
-    src=Iteratn
+    src=Iteratn,maxArea_Scale
     return src
 
-def biggest_Contour_Point(contours,width,height):
-    maxArea=0
+def biggest_Contour_Point(contours,width,height,maxArea):
+    MaxArea=0
     biggestContour=np.array([[0,0],[width,0],[width,height],[0,height]])
     for i in contours:
         area=cv.contourArea(i)   #found area of i'th contour
-        if area>50:   #filter small contours and noise
+        if area>50 and area<maxArea:   #filter small contours and noise
             perimeter=cv.arcLength(i,True)   #true means closed contour
-            aprox=cv.approxPolyDP(i,0.02*perimeter,True)      #0.02*peri is Deviation allowed from original contour
-            if area>maxArea and len(aprox)==4:
+            aprox=cv.approxPolyDP(i,0.04*perimeter,True)      #0.02*peri is Deviation allowed from original contour
+            if area>MaxArea and len(aprox)==4:
                 biggestContour=aprox
-                maxArea=area
-        else:
-            print("area greater than 50 doesnt exist")
+                MaxArea=area
+            # else:
+            #     # print("area greater than 50 doesnt exist")
 
-    return biggestContour
+        # else:
+        #         # print("out of bound")
+
+    return biggestContour,MaxArea
     
