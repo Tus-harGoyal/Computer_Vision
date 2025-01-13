@@ -47,7 +47,7 @@ def biggest_Contour_Point(contours,width,height,maxArea):
         area=cv.contourArea(i)   #found area of i'th contour
         if area>50 and area<maxArea:   #filter small contours and noise
             perimeter=cv.arcLength(i,True)   #true means closed contour
-            aprox=cv.approxPolyDP(i,0.04*perimeter,True)      #0.02*peri is Deviation allowed from original contour
+            aprox=cv.approxPolyDP(i,0.02*perimeter,True)      #0.02*peri is Deviation allowed from original contour
             if area>MaxArea and len(aprox)==4:
                 biggestContour=aprox
                 MaxArea=area
