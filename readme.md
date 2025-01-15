@@ -1,1 +1,1 @@
-This are my practice codes for LEarning Computer vision
+These are my Codes and some projects using Computer Vision
