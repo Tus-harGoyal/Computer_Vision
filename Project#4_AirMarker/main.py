@@ -7,6 +7,18 @@ import cv2 as cv
 frame=cv.VideoCapture(0)
 detector=HandDetector(detectionCon=0.8,maxHands=1)
 blank= None
+def Cal_distance(p1,p2):
+    x1,y1=p1  #index
+    x2,y2=p2
+    distance= ((x2-x1)**2 +  (y2-y1)**2)**0.5
+    return distance
+def mid(p1,p2):
+    x1,y1=p1  #index
+    x2,y2=p2
+    mid=((x1+x2)//2,(y1+y2)//2)
+    return mid
+
+
 # hand,img=detector.findHands(testImg)
 # cv.imshow("image",img)
 # cv.waitKey(0)
@@ -16,13 +28,15 @@ blank= None
 # # print(point1,point2)
 # distance= ((x2-x1)**2 +  (y2-y1)**2)**0.5
 # print(f'distance= {distance}')
-newpos=0
-currentpos=0
+ErasePosN = (0, 0)
+ErasePosI = (0, 0)
+currentpos = (0, 0)
+newpos = (0, 0)
 while True:
     
     Success, img= frame.read()
     img=cv.flip(img,1)
-    hand,img= detector.findHands(img)
+    hand,img= detector.findHands(img,draw=False)
     if blank is None:
         blank=np.zeros_like(img)
         cvzone.putTextRect(blank,"RESET",(40,400))
@@ -31,22 +45,30 @@ while True:
     if hand:
         
         landMarks=hand[0]['lmList']
-        
-        x1,y1=landMarks[8][:2]
-        x2,y2=landMarks[4][:2]
-        currentpos=((x1+x2)//2,(y1+y2)//2)
+        p1=landMarks[8][:2]  #index
+        p2=landMarks[4][:2]  #thumb
+        p3=landMarks[12][:2] #middle
+
+        currentpos=mid(p1,p2)
+        ErasePosI=mid(p1,p3)
         # print(point1,point2)
-        distance= ((x2-x1)**2 +  (y2-y1)**2)**0.5
-        print(f'distance= {distance}')
+        distance= Cal_distance(p1,p2)
+        distanceEraser= Cal_distance(p1,p3)
+        print(f'current= {currentpos}')
         
         if distance<20:
            
            cv.line(blank,currentpos,newpos,(0,0,255),5)
-        if currentpos[1]>400:
+        if p1[0]<200 and p1[0]>40 and p1[1]>350 and p1[1]<400:
             blank=np.zeros_like(img)
             cvzone.putTextRect(blank,"RESET",(40,400))
+        if distanceEraser<30: 
+           cv.line(blank,ErasePosI,ErasePosN,(0,0,0),30)
+           cv.circle(img,ErasePosN,10,(255,250,255),cv.FILLED)
+
 
     newpos= currentpos
+    ErasePosN=ErasePosI
     combined = cv.addWeighted(img, 0.7, blank, 0.3, 0)
     cv.imshow("output",combined)  
     # cv.imshow("video",img) 

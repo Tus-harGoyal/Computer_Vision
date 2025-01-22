@@ -11,7 +11,6 @@ img_dim=480,640
 # cap.set(4,600)
 
 detector = HandDetector(detectionCon=0.8,maxHands=1)  #detection confidanced 80%
-
 '''gameVar'''
 #circles
 cx,cy=100,100
