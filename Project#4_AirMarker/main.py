@@ -32,6 +32,7 @@ ErasePosN = (0, 0)
 ErasePosI = (0, 0)
 currentpos = (0, 0)
 newpos = (0, 0)
+colour=(0,0,255)
 while True:
     
     Success, img= frame.read()
@@ -40,7 +41,9 @@ while True:
     if blank is None:
         blank=np.zeros_like(img)
         cvzone.putTextRect(blank,"RESET",(40,400))
-    
+        cvzone.putTextRect(blank,"G",(40,100),5,5,(255,255,255),(0,255,0))
+        cvzone.putTextRect(blank,"B",(40,200),5,5,(255,255,255),(255,255,0))
+        cvzone.putTextRect(blank,"R",(40,300),5,5,(255,255,255),(0,0,255))
 
     if hand:
         
@@ -55,16 +58,32 @@ while True:
         distance= Cal_distance(p1,p2)
         distanceEraser= Cal_distance(p1,p3)
         print(f'current= {currentpos}')
-        
+        if p1[0]<100 and p1[0]>40 and p1[1]>50 and p1[1]<100:
+            print("green")
+            colour=(0,255,0)
+        if p1[0]<100 and p1[0]>40 and p1[1]>150 and p1[1]<200:
+            print("blue")
+            colour=(255,255,0)
+        if p1[0]<100 and p1[0]>40 and p1[1]>250 and p1[1]<300:
+            print("red")
+            colour=(0,0,255)
+
         if distance<20:
            
-           cv.line(blank,currentpos,newpos,(0,0,255),5)
+           cv.line(blank,currentpos,newpos,colour,5)
+           #resetting
         if p1[0]<200 and p1[0]>40 and p1[1]>350 and p1[1]<400:
             blank=np.zeros_like(img)
             cvzone.putTextRect(blank,"RESET",(40,400))
-        if distanceEraser<30: 
+            cvzone.putTextRect(blank,"G",(40,100),5,5,(255,255,255),(0,255,0))
+            cvzone.putTextRect(blank,"B",(40,200),5,5,(255,255,255),(255,255,0))
+            cvzone.putTextRect(blank,"R",(40,300),5,5,(255,255,255),(0,0,255))      
+
+        if distanceEraser<25: 
            cv.line(blank,ErasePosI,ErasePosN,(0,0,0),30)
            cv.circle(img,ErasePosN,10,(255,250,255),cv.FILLED)
+
+        
 
 
     newpos= currentpos
