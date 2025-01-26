@@ -37,7 +37,7 @@ while True:
     
     Success, img= frame.read()
     img=cv.flip(img,1)
-    hand,img= detector.findHands(img,draw=False)
+    hand,img= detector.findHands(img,draw=True)
     if blank is None:
         blank=np.zeros_like(img)
         cvzone.putTextRect(blank,"RESET",(40,400))
