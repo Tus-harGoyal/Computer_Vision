@@ -27,17 +27,21 @@ def nothing ():
 
 def init_Trackbar():
     cv.namedWindow("cannyBars")
-    cv.resizeWindow("cannyBars",500,100)
+    cv.resizeWindow("cannyBars",500,200)
     # cv.createTrackbar("minArea","cannyBars",50,1000,nothing)
-    cv.createTrackbar("maxArea_Scale","cannyBars",5,50,nothing)
+    cv.createTrackbar("maxArea_Scale","cannyBars",0,30,nothing)
     cv.createTrackbar("G_Blur","cannyBars",5,15,nothing)
+    cv.createTrackbar("Thresh1","cannyBars",0,125,nothing)
+    cv.createTrackbar("Thresh2","cannyBars",0,125,nothing)
     
 
 def GetValTrackBars():
     # minArea=cv.getTrackbarPos("minArea","cannyBars")
     maxArea_Scale=cv.getTrackbarPos("maxArea_Scale","cannyBars")
     Iteratn=cv.getTrackbarPos("G_Blur","cannyBars")
-    src=Iteratn,maxArea_Scale
+    threshold=cv.getTrackbarPos("Thresh1","cannyBars")
+    threshold2=cv.getTrackbarPos("Thresh2","cannyBars")
+    src=Iteratn,maxArea_Scale,threshold,threshold2
     return src
 
 def biggest_Contour_Point(contours,width,height,maxArea):
