@@ -21,7 +21,7 @@ pressed=False
 while True:
     Success, img= cap.read()
     img=cv.flip(img,1)
-    hand, img= detector.findHands(img,draw=False)
+    hand, img= detector.findHands(img,draw=True)
     colour1=(255,255,0)
     colour2=(255,0,0)
     colour3=(255,100,0)
@@ -29,7 +29,7 @@ while True:
     
     if hand:
         landMarks=hand[0]['lmList']
-        # print(landMarks[0][:2])                               #0 means hand no 1, Lmlist is Landmark list 
+        print(landMarks[0][:2])                               #0 means hand no 1, Lmlist is Landmark list 
         x1,y1= landMarks[5][:2]
         x2,y2= landMarks[17][:2]
         # print (x1,y1)

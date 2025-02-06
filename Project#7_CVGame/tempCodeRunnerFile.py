@@ -1,0 +1,2 @@
+
+    cv.imshow("image",frame)
