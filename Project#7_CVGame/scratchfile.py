@@ -1,130 +1,95 @@
 import numpy as np
-import pygame, sys
 import cv2 as cv
-import time    
-import threading
 from cvzone.HandTrackingModule import HandDetector
 
-# Initialize Camera
 cap = cv.VideoCapture(0)
-shapex = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))  
-shapey = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT)) 
-hand_y = shapey // 2  # Default hand position
-frame = np.zeros((shapey, shapex, 3), dtype=np.uint8)  # Initialize blank frame
-lock = threading.Lock()  # Prevent race conditions
+h = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+w = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
+print(h, w)
 
-def process_video():
-    """Handles video capturing and hand tracking in a separate thread."""
-    global hand_y, frame
-    detector = HandDetector(detectionCon=0.8, maxHands=1)
+detector = HandDetector(detectionCon=0.8, maxHands=1)
 
-    while True:
-        success, img = cap.read()
-        if not success:
-            continue  # Skip if frame is not available
-        
-        img = cv.flip(img, 1)  # Flip to match player movement
-        hands, _ = detector.findHands(img, True)  # Detect hands
+# Player paddle
+pw = 10
+ph = 80
+pc = (200, 0, 150)
+pX1 = (0, int(h / 2 - ph / 2))
+pX2 = (pw, int(h / 2 + ph / 2))
 
-        if hands:
-            landmark = hands[0]['lmList']
-            hand_y = int(landmark[9][1])  # Get Y-coordinate of wrist
-        else:
-            hand_y = shapey // 2  # Default position if no hand detected
+# Opponent paddle
+Ow = 10
+Oh = 80
+Oc = (200, 150, 10)
+Otop = h / 2 - Oh / 2  # Set opponent paddle at the center vertically
+Obottom = Otop + Oh
+OpX1 = (w - Ow, int(Otop))
+OpX2 = (w, int(Obottom))
 
-        with lock:
-            frame = cv.cvtColor(img, cv.COLOR_BGR2RGB)  # Store latest frame
+# Ball properties
+ballC = (200, 200, 200)
+ballPos = [int(w / 2), int(h / 2)]
+Crad = 10
+ballVx = 5
+ballVy = 5
+ypos = h / 2
 
-# Start video processing thread
-video_thread = threading.Thread(target=process_video, daemon=True)
-video_thread.start()
-
-# Initialize Pygame
-pygame.init()
-H, W = shapey, shapex
-screen = pygame.Surface((W, H))  # Hidden surface for drawing the game
-pygame.display.set_caption("Pong")
-clock = pygame.time.Clock()
-
-# Game Objects
-ball = pygame.Rect(W / 2 - 15, H / 2 - 15, 30, 30)
-player1 = pygame.Rect(20, H / 2 - 35, 10, 70)  # Left paddle
-player2 = pygame.Rect(W - 30, H / 2 - 35, 10, 70)  # Right paddle
-light_grey = (200, 200, 200)
-ball_speed_x, ball_speed_y = 5, 5
-opponent_speed = 7
-score = 0
-score_colour = (0, 255, 0)
-font = pygame.font.SysFont("Arial", 30)
-
-# Game Loop
 while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            cap.release()
-            cv.destroyAllWindows()
-            pygame.quit()
-            sys.exit()
+    success, frame = cap.read()
+    frame = cv.flip(frame, 1)
+    hand, frame = detector.findHands(frame, draw=True)
 
-    # Update player1 position based on hand tracking
-    player1.y = hand_y - player1.height // 2  # Center paddle to hand
-
-    # Keep player within bounds
-    player1.y = max(0, min(H - player1.height, player1.y))
+    # Update player paddle position based on hand position
+    if hand:
+        landmark = hand[0]['lmList']
+        ypos = landmark[9][1]
+        if ypos - ph / 2 < 0:
+            ypos = ph / 2
+        if ypos + ph / 2 > h:
+            ypos = h - ph / 2
+        pX1 = (0, int(ypos - ph / 2))
+        pX2 = (pw, int(ypos + ph / 2))
 
     # Ball movement
-    ball.x += ball_speed_x
-    ball.y += ball_speed_y
+    ballPos[0] += ballVx
+    ballPos[1] += ballVy
 
-    # AI Opponent Movement
-    if player2.bottom < ball.bottom:
-        player2.y += opponent_speed
-    elif player2.top > ball.top:
-        player2.y -= opponent_speed
+    # Ball collision with walls (top and bottom)
+    if ballPos[1] + Crad > h or ballPos[1] - Crad < 0:
+        ballVy *= -1
 
-    # Ball Collisions
-    if ball.colliderect(player1) or ball.colliderect(player2):
-        ball_speed_x *= -1
-    if ball.top <= 0 or ball.bottom >= H:
-        ball_speed_y *= -1
-    if ball.left <= 0 or ball.right >= W:
-        ball_speed_x *= -1
+    # Ball collision with paddles
+    if ballPos[0] - Crad <= pw and pX1[1] <= ballPos[1] <= pX2[1]:
+        ballVx *= -1
 
-    # Draw Game Elements on Pygame Surface
-    screen.fill((0, 0, 0, 0))  # Transparent background
-    pygame.draw.ellipse(screen, light_grey, ball)
-    pygame.draw.rect(screen, light_grey, player1)
-    pygame.draw.rect(screen, light_grey, player2)
-    pygame.draw.aaline(screen, light_grey, (W / 2, 0), (W / 2, H))
+    if ballPos[0] + Crad >= w - Ow and OpX1[1] <= ballPos[1] <= OpX2[1]:
+        ballVx *= -1
 
-    # Display Score
-    text = font.render(f'Score {score}', True, score_colour)
-    screen.blit(text, (W - 150, 10))
+    # Move the opponent paddle towards the ball's vertical position
+    if ballPos[1] < Otop + Oh / 2:
+        Otop -= ballVy  # Move opponent paddle up
+    elif ballPos[1] > Otop + Oh / 2:
+        Otop += ballVy  # Move opponent paddle down
 
-    # Convert Pygame Surface to OpenCV Format
-    game_surface = pygame.surfarray.array3d(screen)  # Convert Pygame to NumPy array
-    game_surface = np.rot90(game_surface)  # Rotate for OpenCV format
-    
+    # Ensure the opponent paddle stays within screen bounds
+    if Otop < 0:
+        Otop = 0
+    if Otop + Oh > h:
+        Otop = h - Oh
 
-    # Fetch Latest Camera Frame
-    with lock:
-        frame_copy = frame.copy()
+    Obottom = Otop + Oh
+    OpX1 = (w - Ow, int(Otop))
+    OpX2 = (w, int(Obottom))
 
-    # Blend Game with Camera Feed
-    alpha = 0.5  # Transparency level
-    frame=cv.cvtColor(frame,cv.COLOR_RGB2BGR)
-    overlay = cv.addWeighted(frame_copy, 1 - alpha, game_surface, alpha, 0)
+    # Draw paddles and ball
+    cv.rectangle(frame, pX1, pX2, pc, cv.FILLED)
+    cv.rectangle(frame, OpX1, OpX2, Oc, cv.FILLED)
+    cv.circle(frame, tuple(ballPos), Crad, ballC, cv.FILLED)
 
-    # Show Final Output
-    cv.imshow("Pong with Camera Feed", overlay)
+    # Display frame
+    cv.imshow("Pong", frame)
 
     if cv.waitKey(1) & 0xFF == 27:
         break
 
-    clock.tick(60)  # Maintain 60 FPS
-
-# Cleanup
 cap.release()
 cv.destroyAllWindows()
-pygame.quit()
-sys.exit()
