@@ -81,9 +81,7 @@ while True:
     OpX2 = (w, int(Obottom))
 
     # Draw paddles and ball
-    cv.rectangle(frame, pX1, pX2, pc, cv.FILLED)
-    cv.rectangle(frame, OpX1, OpX2, Oc, cv.FILLED)
-    cv.circle(frame, tuple(ballPos), Crad, ballC, cv.FILLED)
+    
 
     # Display frame
     cv.imshow("Pong", frame)
