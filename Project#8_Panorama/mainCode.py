@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 MF='Resource'
-save_Location='Output'
+save_Location=r'C:\Users\Tusha\ComputerVision\Project#8_Panorama\Output'
 myF=os.listdir(MF)
 
 
@@ -14,7 +14,6 @@ for folder in myF:
      imageArray=[]
      i=0
      for images in list:
-
           imgread= cv.imread(f'{path}/{images}')
           imgread=cv.resize(imgread,(500,500))
           imageArray.append(imgread)
@@ -32,15 +31,13 @@ for folder in myF:
           print("not generated")
      cv.waitKey(0)
      cv.destroyAllWindows()
-     # print(str('Output/'+folder+'_result'+'.jpg'))
+     print(save_Location+'/'+folder+'_result'+'.jpg')
      save=int (input("wanna save?"))
      if save ==1:   
-          cv.imwrite(str(save_Location+folder+'/_result'+'.jpg'),result)
+          cv.imwrite(save_Location+'/'+folder+'_result'+'.jpg',result)
+
           print("result saved")
 
-
-
-    # print(list)
 # img=cv.imread(f'{path}')
 # cv.imshow("img",img)
 cv.waitKey(0)

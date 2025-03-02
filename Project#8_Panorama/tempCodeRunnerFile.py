@@ -1,3 +1,4 @@
-mread(f'{path}')
-# cv.imshow("img",img)
-# cv.waitKey(0)
+
+#     path=MF+'/'+myF
+#     list=os.listdir(path)  
+#     print(list) 
